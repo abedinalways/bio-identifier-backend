@@ -1,0 +1,63 @@
+import { HospitalsService } from './hospitals.service';
+import { FilterHospitalsDto, NearestHospitalsDto } from './dto/nearest-hospitals.dto';
+export declare class HospitalsController {
+    private readonly hospitalsService;
+    constructor(hospitalsService: HospitalsService);
+    findNearest(query: NearestHospitalsDto): Promise<{
+        userCoordinates: {
+            lat: number;
+            lng: number;
+        };
+        radiusKm: number;
+        count: number;
+        nearestHospitals: {
+            distanceKm: number;
+            name: string;
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            country: string;
+            division: string;
+            district: string;
+            hotline: string;
+            hasAntivenomStock: boolean;
+            address: string;
+            latitude: number;
+            longitude: number;
+            emergencyUnit: string | null;
+            icuAvailable: boolean;
+        }[];
+    }>;
+    findAll(query: FilterHospitalsDto): Promise<{
+        name: string;
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        country: string;
+        division: string;
+        district: string;
+        hotline: string;
+        hasAntivenomStock: boolean;
+        address: string;
+        latitude: number;
+        longitude: number;
+        emergencyUnit: string | null;
+        icuAvailable: boolean;
+    }[]>;
+    findOne(id: string): Promise<{
+        name: string;
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        country: string;
+        division: string;
+        district: string;
+        hotline: string;
+        hasAntivenomStock: boolean;
+        address: string;
+        latitude: number;
+        longitude: number;
+        emergencyUnit: string | null;
+        icuAvailable: boolean;
+    }>;
+}

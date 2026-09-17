@@ -16,13 +16,24 @@ async function bootstrap() {
   // Cross-Origin Resource Sharing (CORS)
   const corsOrigins = process.env.CORS_ORIGINS
     ? process.env.CORS_ORIGINS.split(',').map(origin => origin.trim())
-    : ['http://localhost:3000', 'http://localhost:3001'];
+    : [
+        'http://localhost:3000',
+        'http://localhost:3001',
+        'http://127.0.0.1:3000',
+      ];
 
   app.enableCors({
     origin: corsOrigins,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'X-Client-Platform',
+      'Accept',
+      'Origin',
+      'X-Requested-With',
+    ],
   });
 
   // Global Validation Pipe
@@ -94,7 +105,7 @@ async function bootstrap() {
     },
   });
 
-  const port = process.env.PORT || 5000;
+  const port = process.env.PORT || 5001;
   await app.listen(port);
 
   logger.log(
