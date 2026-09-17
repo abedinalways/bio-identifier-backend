@@ -1,9 +1,20 @@
 import { SnakesService } from './snakes.service';
 import { FilterSnakesDto } from './dto/filter-snakes.dto';
 import { CreateSnakeDto } from './dto/create-snake.dto';
+import { IdentificationService } from '../identification/identification.service';
 export declare class SnakesController {
     private readonly snakesService;
-    constructor(snakesService: SnakesService);
+    private readonly identificationService;
+    constructor(snakesService: SnakesService, identificationService: IdentificationService);
+    identifySnake(file: Express.Multer.File, body: any): Promise<{
+        identificationId: string;
+        timestamp: Date;
+        type: string;
+        confidence: any;
+        analysis: any;
+        matchedSpecies: any;
+        urgency: string;
+    }>;
     findAll(query: FilterSnakesDto): Promise<{
         items: {
             id: string;

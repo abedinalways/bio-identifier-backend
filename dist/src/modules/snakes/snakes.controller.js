@@ -22,9 +22,19 @@ const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 const roles_guard_1 = require("../auth/guards/roles.guard");
 const roles_decorator_1 = require("../auth/decorators/roles.decorator");
 const client_1 = require("@prisma/client");
+const identification_service_1 = require("../identification/identification.service");
+const platform_express_1 = require("@nestjs/platform-express");
+const common_2 = require("@nestjs/common");
 let SnakesController = class SnakesController {
-    constructor(snakesService) {
+    constructor(snakesService, identificationService) {
         this.snakesService = snakesService;
+        this.identificationService = identificationService;
+    }
+    async identifySnake(file, body) {
+        return this.identificationService.identifySpecimen(file, {
+            ...body,
+            domain: 'snake',
+        });
     }
     async findAll(query) {
         return this.snakesService.findAll(query);
@@ -49,6 +59,16 @@ let SnakesController = class SnakesController {
     }
 };
 exports.SnakesController = SnakesController;
+__decorate([
+    (0, common_1.Post)('identify'),
+    (0, common_2.UseInterceptors)((0, platform_express_1.FileInterceptor)('image')),
+    (0, swagger_1.ApiOperation)({ summary: 'Identify snake specimen photo' }),
+    __param(0, (0, common_2.UploadedFile)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], SnakesController.prototype, "identifySnake", null);
 __decorate([
     (0, common_1.Get)(),
     (0, swagger_1.ApiOperation)({
@@ -130,6 +150,7 @@ __decorate([
 exports.SnakesController = SnakesController = __decorate([
     (0, swagger_1.ApiTags)('Snakes & Antivenom'),
     (0, common_1.Controller)('snakes'),
-    __metadata("design:paramtypes", [snakes_service_1.SnakesService])
+    __metadata("design:paramtypes", [snakes_service_1.SnakesService,
+        identification_service_1.IdentificationService])
 ], SnakesController);
 //# sourceMappingURL=snakes.controller.js.map

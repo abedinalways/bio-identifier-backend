@@ -13,11 +13,30 @@ import { PestsService } from './pests.service';
 import { FilterPestsDto } from './dto/filter-pests.dto';
 import { CalculateDosageDto } from './dto/calculate-dosage.dto';
 import { PestCategory } from '@prisma/client';
+import { IdentificationService } from '../identification/identification.service';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { UseInterceptors, UploadedFile } from '@nestjs/common';
 
 @ApiTags('Pests & Crop Remedies')
 @Controller('pests')
 export class PestsController {
-  constructor(private readonly pestsService: PestsService) {}
+  constructor(
+    private readonly pestsService: PestsService,
+    private readonly identificationService: IdentificationService,
+  ) {}
+
+  @Post('identify')
+  @UseInterceptors(FileInterceptor('image'))
+  @ApiOperation({ summary: 'Identify agricultural pest specimen photo' })
+  async identifyPest(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() body: any,
+  ) {
+    return this.identificationService.identifySpecimen(file, {
+      ...body,
+      domain: 'pest',
+    });
+  }
 
   @Get()
   @ApiOperation({

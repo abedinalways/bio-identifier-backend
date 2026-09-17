@@ -2,9 +2,20 @@ import { PestsService } from './pests.service';
 import { FilterPestsDto } from './dto/filter-pests.dto';
 import { CalculateDosageDto } from './dto/calculate-dosage.dto';
 import { PestCategory } from '@prisma/client';
+import { IdentificationService } from '../identification/identification.service';
 export declare class PestsController {
     private readonly pestsService;
-    constructor(pestsService: PestsService);
+    private readonly identificationService;
+    constructor(pestsService: PestsService, identificationService: IdentificationService);
+    identifyPest(file: Express.Multer.File, body: any): Promise<{
+        identificationId: string;
+        timestamp: Date;
+        type: string;
+        confidence: any;
+        analysis: any;
+        matchedSpecies: any;
+        urgency: string;
+    }>;
     findAll(query: FilterPestsDto): Promise<{
         items: ({
             treatments: {

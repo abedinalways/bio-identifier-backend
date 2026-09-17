@@ -14,17 +14,30 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { EmergencyService } from './emergency.service';
+import { HospitalsService } from '../hospitals/hospitals.service';
+import { FilterHospitalsDto } from '../hospitals/dto/nearest-hospitals.dto';
 import { CreateSosCallDto } from './dto/sos-call.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { GetUser } from '../auth/decorators/get-user.decorator';
 import { Role } from '@prisma/client';
+import { Query } from '@nestjs/common';
 
 @ApiTags('Emergency Hotline & SOS Dispatch')
 @Controller('emergency')
 export class EmergencyController {
-  constructor(private readonly emergencyService: EmergencyService) {}
+  constructor(
+    private readonly emergencyService: EmergencyService,
+    private readonly hospitalsService: HospitalsService,
+  ) {}
+
+  @Get('hospitals')
+  @ApiOperation({ summary: 'Get emergency hospitals directory' })
+  @ApiResponse({ status: 200, description: 'List of emergency hospitals' })
+  async getHospitals(@Query() query: FilterHospitalsDto) {
+    return this.hospitalsService.findAll(query);
+  }
 
   @Get('hotlines')
   @ApiOperation({

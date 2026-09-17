@@ -1,8 +1,27 @@
 import { EmergencyService } from './emergency.service';
+import { HospitalsService } from '../hospitals/hospitals.service';
+import { FilterHospitalsDto } from '../hospitals/dto/nearest-hospitals.dto';
 import { CreateSosCallDto } from './dto/sos-call.dto';
 export declare class EmergencyController {
     private readonly emergencyService;
-    constructor(emergencyService: EmergencyService);
+    private readonly hospitalsService;
+    constructor(emergencyService: EmergencyService, hospitalsService: HospitalsService);
+    getHospitals(query: FilterHospitalsDto): Promise<{
+        id: string;
+        name: string;
+        createdAt: Date;
+        updatedAt: Date;
+        country: string;
+        district: string;
+        division: string;
+        hotline: string;
+        hasAntivenomStock: boolean;
+        address: string;
+        latitude: number;
+        longitude: number;
+        emergencyUnit: string | null;
+        icuAvailable: boolean;
+    }[]>;
     getHotlines(): {
         bangladesh: {
             name: string;

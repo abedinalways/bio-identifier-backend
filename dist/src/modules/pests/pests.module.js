@@ -10,11 +10,13 @@ exports.PestsModule = void 0;
 const common_1 = require("@nestjs/common");
 const pests_service_1 = require("./pests.service");
 const pests_controller_1 = require("./pests.controller");
+const identification_module_1 = require("../identification/identification.module");
 let PestsModule = class PestsModule {
 };
 exports.PestsModule = PestsModule;
 exports.PestsModule = PestsModule = __decorate([
     (0, common_1.Module)({
+        imports: [identification_module_1.IdentificationModule],
         controllers: [pests_controller_1.PestsController],
         providers: [pests_service_1.PestsService],
         exports: [pests_service_1.PestsService],

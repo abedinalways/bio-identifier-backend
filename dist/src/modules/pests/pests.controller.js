@@ -19,9 +19,19 @@ const pests_service_1 = require("./pests.service");
 const filter_pests_dto_1 = require("./dto/filter-pests.dto");
 const calculate_dosage_dto_1 = require("./dto/calculate-dosage.dto");
 const client_1 = require("@prisma/client");
+const identification_service_1 = require("../identification/identification.service");
+const platform_express_1 = require("@nestjs/platform-express");
+const common_2 = require("@nestjs/common");
 let PestsController = class PestsController {
-    constructor(pestsService) {
+    constructor(pestsService, identificationService) {
         this.pestsService = pestsService;
+        this.identificationService = identificationService;
+    }
+    async identifyPest(file, body) {
+        return this.identificationService.identifySpecimen(file, {
+            ...body,
+            domain: 'pest',
+        });
     }
     async findAll(query) {
         return this.pestsService.findAll(query);
@@ -40,6 +50,16 @@ let PestsController = class PestsController {
     }
 };
 exports.PestsController = PestsController;
+__decorate([
+    (0, common_1.Post)('identify'),
+    (0, common_2.UseInterceptors)((0, platform_express_1.FileInterceptor)('image')),
+    (0, swagger_1.ApiOperation)({ summary: 'Identify agricultural pest specimen photo' }),
+    __param(0, (0, common_2.UploadedFile)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], PestsController.prototype, "identifyPest", null);
 __decorate([
     (0, common_1.Get)(),
     (0, swagger_1.ApiOperation)({
@@ -108,6 +128,7 @@ __decorate([
 exports.PestsController = PestsController = __decorate([
     (0, swagger_1.ApiTags)('Pests & Crop Remedies'),
     (0, common_1.Controller)('pests'),
-    __metadata("design:paramtypes", [pests_service_1.PestsService])
+    __metadata("design:paramtypes", [pests_service_1.PestsService,
+        identification_service_1.IdentificationService])
 ], PestsController);
 //# sourceMappingURL=pests.controller.js.map

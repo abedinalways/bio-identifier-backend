@@ -10,11 +10,13 @@ exports.EmergencyModule = void 0;
 const common_1 = require("@nestjs/common");
 const emergency_service_1 = require("./emergency.service");
 const emergency_controller_1 = require("./emergency.controller");
+const hospitals_module_1 = require("../hospitals/hospitals.module");
 let EmergencyModule = class EmergencyModule {
 };
 exports.EmergencyModule = EmergencyModule;
 exports.EmergencyModule = EmergencyModule = __decorate([
     (0, common_1.Module)({
+        imports: [hospitals_module_1.HospitalsModule],
         controllers: [emergency_controller_1.EmergencyController],
         providers: [emergency_service_1.EmergencyService],
         exports: [emergency_service_1.EmergencyService],

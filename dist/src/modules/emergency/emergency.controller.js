@@ -16,15 +16,22 @@ exports.EmergencyController = void 0;
 const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const emergency_service_1 = require("./emergency.service");
+const hospitals_service_1 = require("../hospitals/hospitals.service");
+const nearest_hospitals_dto_1 = require("../hospitals/dto/nearest-hospitals.dto");
 const sos_call_dto_1 = require("./dto/sos-call.dto");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 const roles_guard_1 = require("../auth/guards/roles.guard");
 const roles_decorator_1 = require("../auth/decorators/roles.decorator");
 const get_user_decorator_1 = require("../auth/decorators/get-user.decorator");
 const client_1 = require("@prisma/client");
+const common_2 = require("@nestjs/common");
 let EmergencyController = class EmergencyController {
-    constructor(emergencyService) {
+    constructor(emergencyService, hospitalsService) {
         this.emergencyService = emergencyService;
+        this.hospitalsService = hospitalsService;
+    }
+    async getHospitals(query) {
+        return this.hospitalsService.findAll(query);
     }
     getHotlines() {
         return this.emergencyService.getHotlines();
@@ -37,6 +44,15 @@ let EmergencyController = class EmergencyController {
     }
 };
 exports.EmergencyController = EmergencyController;
+__decorate([
+    (0, common_1.Get)('hospitals'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get emergency hospitals directory' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'List of emergency hospitals' }),
+    __param(0, (0, common_2.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [nearest_hospitals_dto_1.FilterHospitalsDto]),
+    __metadata("design:returntype", Promise)
+], EmergencyController.prototype, "getHospitals", null);
 __decorate([
     (0, common_1.Get)('hotlines'),
     (0, swagger_1.ApiOperation)({
@@ -87,6 +103,7 @@ __decorate([
 exports.EmergencyController = EmergencyController = __decorate([
     (0, swagger_1.ApiTags)('Emergency Hotline & SOS Dispatch'),
     (0, common_1.Controller)('emergency'),
-    __metadata("design:paramtypes", [emergency_service_1.EmergencyService])
+    __metadata("design:paramtypes", [emergency_service_1.EmergencyService,
+        hospitals_service_1.HospitalsService])
 ], EmergencyController);
 //# sourceMappingURL=emergency.controller.js.map

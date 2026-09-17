@@ -23,11 +23,30 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { Role } from '@prisma/client';
+import { IdentificationService } from '../identification/identification.service';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { UseInterceptors, UploadedFile } from '@nestjs/common';
 
 @ApiTags('Snakes & Antivenom')
 @Controller('snakes')
 export class SnakesController {
-  constructor(private readonly snakesService: SnakesService) {}
+  constructor(
+    private readonly snakesService: SnakesService,
+    private readonly identificationService: IdentificationService,
+  ) {}
+
+  @Post('identify')
+  @UseInterceptors(FileInterceptor('image'))
+  @ApiOperation({ summary: 'Identify snake specimen photo' })
+  async identifySnake(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() body: any,
+  ) {
+    return this.identificationService.identifySpecimen(file, {
+      ...body,
+      domain: 'snake',
+    });
+  }
 
   @Get()
   @ApiOperation({
