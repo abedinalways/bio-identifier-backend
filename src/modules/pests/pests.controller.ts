@@ -2,17 +2,30 @@ import {
   Controller,
   Get,
   Post,
+  Patch,
+  Delete,
   Body,
   Param,
   Query,
   HttpCode,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { PestsService } from './pests.service';
 import { FilterPestsDto } from './dto/filter-pests.dto';
 import { CalculateDosageDto } from './dto/calculate-dosage.dto';
-import { PestCategory } from '@prisma/client';
+import { CreatePestDto } from './dto/create-pest.dto';
+import { PestCategory, Role } from '@prisma/client';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
 import { IdentificationService } from '../identification/identification.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UseInterceptors, UploadedFile } from '@nestjs/common';
@@ -94,5 +107,40 @@ export class PestsController {
   @ApiResponse({ status: 404, description: 'Pest not found' })
   async findOne(@Param('id') id: string) {
     return this.pestsService.findOne(id);
+  }
+
+  @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.AGRONOMIST)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Create new pest and treatment protocol (Admin/Agronomist only)',
+  })
+  @ApiResponse({ status: 201, description: 'Pest created successfully' })
+  async create(@Body() createPestDto: CreatePestDto) {
+    return this.pestsService.create(createPestDto);
+  }
+
+  @Patch(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.AGRONOMIST)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update pest entry (Admin/Agronomist only)' })
+  @ApiResponse({ status: 200, description: 'Pest updated successfully' })
+  async update(
+    @Param('id') id: string,
+    @Body() updateDto: Partial<CreatePestDto>,
+  ) {
+    return this.pestsService.update(id, updateDto);
+  }
+
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Delete pest entry (Admin only)' })
+  @ApiResponse({ status: 200, description: 'Pest deleted successfully' })
+  async remove(@Param('id') id: string) {
+    return this.pestsService.remove(id);
   }
 }

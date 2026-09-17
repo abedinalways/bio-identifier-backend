@@ -4,6 +4,7 @@ import {
   FilterHospitalsDto,
   NearestHospitalsDto,
 } from './dto/nearest-hospitals.dto';
+import { CreateHospitalDto } from './dto/create-hospital.dto';
 import { Prisma } from '@prisma/client';
 import { calculateHaversineDistanceKm } from '../../common/utils/haversine';
 
@@ -84,5 +85,40 @@ export class HospitalsService {
     }
 
     return hospital;
+  }
+
+  async create(dto: CreateHospitalDto) {
+    const hospitalId =
+      dto.id ||
+      dto.name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .slice(0, 30);
+
+    return this.prisma.hospital.create({
+      data: {
+        ...dto,
+        id: hospitalId,
+        country: dto.country ? dto.country.toUpperCase() : 'BD',
+      },
+    });
+  }
+
+  async update(id: string, dto: Partial<CreateHospitalDto>) {
+    await this.findOne(id);
+    return this.prisma.hospital.update({
+      where: { id },
+      data: {
+        ...dto,
+        country: dto.country ? dto.country.toUpperCase() : undefined,
+      },
+    });
+  }
+
+  async remove(id: string) {
+    await this.findOne(id);
+    return this.prisma.hospital.delete({
+      where: { id },
+    });
   }
 }

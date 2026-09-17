@@ -6,6 +6,7 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { FilterPestsDto } from './dto/filter-pests.dto';
 import { CalculateDosageDto } from './dto/calculate-dosage.dto';
+import { CreatePestDto } from './dto/create-pest.dto';
 import { PestCategory, Prisma } from '@prisma/client';
 
 @Injectable()
@@ -152,5 +153,46 @@ export class PestsService {
         instructionsSummary: `Mix ${dosagePer16LTank} ${treatment.dosageUnit} per 16-liter knapsack tank. You will need approximately ${tanksRequired} tank(s) for ${waterLiters}L total spray solution.`,
       },
     };
+  }
+
+  async create(dto: CreatePestDto) {
+    const pestId =
+      dto.id || dto.scientificName.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const { treatments, ...pestData } = dto;
+
+    return this.prisma.pest.create({
+      data: {
+        ...pestData,
+        id: pestId,
+        treatments:
+          treatments && treatments.length > 0
+            ? {
+                create: treatments.map(t => ({
+                  ...t,
+                  commercialExamples: t.commercialExamples || [],
+                })),
+              }
+            : undefined,
+      },
+      include: { treatments: true },
+    });
+  }
+
+  async update(id: string, dto: Partial<CreatePestDto>) {
+    await this.findOne(id);
+    const { treatments, ...pestData } = dto;
+
+    return this.prisma.pest.update({
+      where: { id },
+      data: pestData as any,
+      include: { treatments: true },
+    });
+  }
+
+  async remove(id: string) {
+    await this.findOne(id);
+    return this.prisma.pest.delete({
+      where: { id },
+    });
   }
 }
